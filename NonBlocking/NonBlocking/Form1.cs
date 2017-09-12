@@ -20,18 +20,45 @@ namespace NonBlocking
             textBoxUrl2.Text = "https://www.blognone.com/";
         }
 
-
         private void GetContent_Click(object sender, EventArgs e)
         {
-            Task taskA = Task.Run(() =>
-            {
-                Console.WriteLine("Hello from taskA.");
-                HttpHandler http1 = new HttpHandler();
-            });
+            SetOutputEmpty();
 
-            taskA.Start();
+            Task.Run(() =>
+           {
+               var http = new HttpHandler(textBoxOutput1);
+               http.WebContentReturned += HttpHandler_WebContentReturned;
+               http.GetDatFromUrl(textBoxUrl1.Text);
+           });
+
+            Task.Run(() =>
+            {
+                var http = new HttpHandler(textBoxOutput2);
+                http.WebContentReturned += HttpHandler_WebContentReturned;
+                http.GetDatFromUrl(textBoxUrl2.Text);
+            });
         }
 
-      
+        private void SetOutputEmpty()
+        {
+            textBoxOutput1.Text = string.Empty;
+            textBoxOutput2.Text = string.Empty;
+        }
+
+        private delegate void WebContentReturnHandler(TextBox txt, HttpResponseArgs e);
+
+        private void HttpHandler_WebContentReturned(object sender, EventArgs e)
+        {
+            var textbox = (sender as HttpHandler);
+            if (textbox != null)
+            {
+                Invoke(new WebContentReturnHandler(SetTextBox), textbox.OutputTextbox, e);
+            }
+        }
+
+        protected virtual void SetTextBox(TextBox sender, HttpResponseArgs e)
+        {
+            (sender).Text = e.HttpBody;
+        }
     }
 }
