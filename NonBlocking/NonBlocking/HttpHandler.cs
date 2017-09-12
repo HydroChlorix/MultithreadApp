@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -25,8 +26,17 @@ namespace NonBlocking
             //Console.WriteLine("onWebContentReturned");
             WebContentReturned?.Invoke(this, e);
         }
-
-        internal void GetDatFromUrl(string url)
+        public async Task<string> GetContentAsync(string url)
+        {
+            using (var client = new HttpClient())
+            {
+                using (var r = await client.GetAsync(new Uri(url)))
+                {
+                    return await r.Content.ReadAsStringAsync();
+                }
+            }
+        }
+        internal void GetDataFromUrl(string url)
         {
             //Console.WriteLine("GetData : " + url);
 

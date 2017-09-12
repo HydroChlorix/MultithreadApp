@@ -28,14 +28,20 @@ namespace NonBlocking
            {
                var http = new HttpHandler(textBoxOutput1);
                http.WebContentReturned += HttpHandler_WebContentReturned;
-               http.GetDatFromUrl(textBoxUrl1.Text);
-           });
+               http.GetDataFromUrl(textBoxUrl1.Text);
+
+//               http.OnWebContentReturned(new HttpResponseArgs
+//               {
+//                   HttpBody = http.GetContentAsync(textBoxUrl1.Text).Result,
+//                   ResponseCode = 200
+//               });
+            });
 
             Task.Run(() =>
             {
                 var http = new HttpHandler(textBoxOutput2);
                 http.WebContentReturned += HttpHandler_WebContentReturned;
-                http.GetDatFromUrl(textBoxUrl2.Text);
+                http.GetDataFromUrl(textBoxUrl2.Text);
             });
         }
 
