@@ -13,6 +13,13 @@ namespace NonBlocking
         protected virtual void onWebContentReturned(HttpResponseArgs e)
         {
             //do stuff
+            Console.WriteLine("do stuff");
+            WebContentReturned?.Invoke(this, e);
+
+            if (e.responseCode == 200)
+            {
+
+            }
         }
     }
 

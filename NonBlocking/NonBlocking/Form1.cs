@@ -19,11 +19,19 @@ namespace NonBlocking
             textBoxUrl1.Text = "https://www.google.co.th/";
             textBoxUrl2.Text = "https://www.blognone.com/";
         }
-        
+
 
         private void GetContent_Click(object sender, EventArgs e)
         {
+            Task taskA = Task.Run(() =>
+            {
+                Console.WriteLine("Hello from taskA.");
+                HttpHandler http1 = new HttpHandler();
+            });
 
+            taskA.Start();
         }
+
+      
     }
 }
