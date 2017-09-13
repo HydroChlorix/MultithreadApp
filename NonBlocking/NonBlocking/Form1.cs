@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -25,16 +19,16 @@ namespace NonBlocking
             SetOutputEmpty();
 
             Task.Run(() =>
-           {
-               var http = new HttpHandler(textBoxOutput1);
-               http.WebContentReturned += HttpHandler_WebContentReturned;
-               http.GetDataFromUrl(textBoxUrl1.Text);
+            {
+                var http = new HttpHandler(textBoxOutput1);
+                http.WebContentReturned += HttpHandler_WebContentReturned;
+                http.GetDataFromUrl(textBoxUrl1.Text);
 
-//               http.OnWebContentReturned(new HttpResponseArgs
-//               {
-//                   HttpBody = http.GetContentAsync(textBoxUrl1.Text).Result,
-//                   ResponseCode = 200
-//               });
+                //               http.OnWebContentReturned(new HttpResponseArgs
+                //               {
+                //                   HttpBody = http.GetContentAsync(textBoxUrl1.Text).Result,
+                //                   ResponseCode = 200
+                //               });
             });
 
             Task.Run(() =>
@@ -51,20 +45,29 @@ namespace NonBlocking
             textBoxOutput2.Text = string.Empty;
         }
 
-        private delegate void WebContentReturnHandler(TextBox txt, HttpResponseArgs e);
+        //private delegate void WebContentReturnHandler(TextBox txt, HttpResponseArgs e);
+
+        //private void HttpHandler_WebContentReturned(object sender, EventArgs e)
+        //{
+        //    var textbox = (sender as HttpHandler);
+        //    if (textbox == null) return;
+        //    Invoke(new WebContentReturnHandler(SetTextBox), textbox.OutputTextbox, e);
+        //}
+        //protected virtual void SetTextBox(TextBox sender, HttpResponseArgs e)
+        //{
+        //    (sender).Text = e.HttpBody;
+        //}
 
         private void HttpHandler_WebContentReturned(object sender, EventArgs e)
         {
-            var textbox = (sender as HttpHandler);
-            if (textbox != null)
-            {
-                Invoke(new WebContentReturnHandler(SetTextBox), textbox.OutputTextbox, e);
-            }
+            var textbox = sender as HttpHandler;
+            if (textbox == null) return;
+            Invoke(Action, textbox.OutputTextbox, e);
         }
 
-        protected virtual void SetTextBox(TextBox sender, HttpResponseArgs e)
+        protected Action<TextBox, HttpResponseArgs> Action = (textBox, httpResponseArgs) =>
         {
-            (sender).Text = e.HttpBody;
-        }
+            textBox.Text = httpResponseArgs.ResponseCode == 200 ? httpResponseArgs.HttpBody : string.Empty;
+        };
     }
 }
